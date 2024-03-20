@@ -11,7 +11,12 @@
  *      86400 -> 02.06.2020
  */
 function secondsToDate(seconds) {
+    const baseDate = new Date('2020-06-02T00:00:00Z');
+    const milliseconds = seconds * 1000;
+    const resultDate = new Date(baseDate.getTime() + milliseconds);
+    const formattedDate = resultDate.toLocaleDateString('en-GB');
 
+    return formattedDate;
 }
 
 /**
@@ -26,7 +31,7 @@ function secondsToDate(seconds) {
  *      10 -> "1010"
  */
 function toBase2Converter(decimal) {
-
+    return decimal.toString(2);
 }
 
 /**
@@ -42,7 +47,16 @@ function toBase2Converter(decimal) {
  *      'T', 'test it' -> 2
  */
 function substringOccurrencesCounter(substring, text) {
+    let count = 0;
+    const substringLowercase = substring.toLowerCase();
+    let index = text.indexOf(substringLowercase);
 
+    while(index !== -1){
+        count++;
+        index = text.indexOf(substringLowercase, index + 1);
+    }
+
+    return count;
 }
 
 /**
@@ -56,7 +70,13 @@ function substringOccurrencesCounter(substring, text) {
  *      "Hello world" -> "HHeello  wworrldd" // o, l is repeated more then once. Space was also repeated
  */
 function repeatingLitters(string) {
-
+    return string.split('').map((char, index) => {
+        if (char === string[index + 1] || char === string[index - 1]) {
+            return char;
+        } else {
+            return char.repeat(2);
+        }
+    }).join('');
 }
 
 /**
@@ -78,6 +98,9 @@ function repeatingLitters(string) {
  */
 function redundant(str) {
 
+    return () => {
+        return str;
+    }
 }
 
 /**
@@ -87,7 +110,7 @@ function redundant(str) {
  * @return {number}
  */
 function towerHanoi(disks) {
-
+    return Math.pow(2, disks) - 1;
 }
 
 /**
@@ -99,7 +122,26 @@ function towerHanoi(disks) {
  *
  */
 function matrixMultiplication(matrix1, matrix2) {
+    const rows1 = matrix1.length;
+    const cols1 = matrix1[0].length;
+    const rows2 = matrix2.length;
+    const cols2 = matrix2[0].length;
 
+    if(cols1 !== rows2) throw new Error("Dimensions don't match");
+
+    const result = [];
+
+    for(let i = 0; i < rows1; ++i){
+        result[i] = [];
+        for(let j = 0; j < cols2; ++j){
+            result[i][j] = 0;
+            for(let k = 0; k < cols1; k++){
+                result[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+
+    return result;
 }
 
 /**
@@ -118,5 +160,43 @@ function matrixMultiplication(matrix1, matrix2) {
  *      gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get()  ➞ "hello"
  */
 function gather(str) {
+    let args = [str];
+    let orderIndices = [];
+  
+    function chain(val) {
+        args.push(val);
+        return chain;
+    }
 
+    chain.order = function(index) {
+        args.push(index);
+        return chain;
+    };
+    
+    chain.get = function() {
+        const filteredIndices = args.filter(arg => typeof arg === "number");
+        const sortedArgs = filteredIndices.map(index => args[index]);
+        return sortedArgs.join('');
+    };
+      
+    return chain;
+}
+  
+  // Example usage:
+  const result = gather('a')('b')('c')
+    .order(2)(1)(0)
+    .get();
+  
+  console.log(result); // Output: "cba"
+  
+
+export {
+    secondsToDate,
+    toBase2Converter,
+    substringOccurrencesCounter,
+    repeatingLitters,
+    redundant,
+    towerHanoi,
+    matrixMultiplication,
+    gather
 }
